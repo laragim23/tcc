@@ -18,9 +18,15 @@ if (isset($_POST['pesquisar'])) { //se clicou no botao pesquisar
   $V_WHERE= " and cliente_id like '%" . $_POST['cliente_id']."%' ";
 }
 
-//2. Preparar a sql
-$sql = "select * from venda
-where 1 = 1" . $V_WHERE;
+
+
+$sql = "SELECT venda.id, venda.valorTotal, cliente.nome AS nome_cliente, vendedor.nome AS nome_vendedor, venda.vendedor_id, venda.produto_id
+        FROM venda 
+        INNER JOIN cliente ON venda.cliente_id = cliente.id 
+        INNER JOIN vendedor ON venda.vendedor_id = vendedor.id
+        WHERE 1 = 1" . $V_WHERE;
+
+
 
 //3. Executar a SQL
 $resultado = mysqli_query($conexao, $sql);
@@ -89,10 +95,10 @@ $resultado = mysqli_query($conexao, $sql);
                         <?= $linha['valorTotal'] ?>
                         </td>
                         <td>
-                        <?= $linha['cliente_id'] ?>
+                        <?= $linha['nome_cliente'] ?>
                         </td>
                         <td>
-                        <?= $linha['produto_id'] ?>
+                        <?= $linha['nome_vendedor'] ?>
                         </td>
                         <td><a href="alterarVenda.php?id=<?= $linha['id'] ?>" class="btn btn-warning"><i
                             class="bi bi-pencil-square"></i></a>
