@@ -18,11 +18,12 @@ if (isset($_POST['voltar'])) {
 if (isset($_POST['salvar'])) {
     $nome = $_POST['nome'];
     $telefone = $_POST['telefone'];
-    $comissao = $_POST['comissao'];
+    $endereco = $_POST['endereco'];
+    $status = $_POST['status'];
 
     $sql = "insert into vendedor 
-            (nome, telefone, comissao) values 
-            ('$nome', '$telefone', '$comissao')";
+            (nome, telefone, endereco, status) values 
+            ('$nome', '$telefone', '$endereco', '$status')";
 
     mysqli_query($conexao, $sql);
 
@@ -34,17 +35,6 @@ if (isset($_POST['salvar'])) {
 
 
 <main id="main" class="main">
-
-    <div class="pagetitle">
-      <h1>Vendedores</h1>
-      <nav>
-        <ol class="breadcrumb">
-          <li class="breadcrumb-item"><a href="index.html">Início</a></li>
-          <li class="breadcrumb-item">Vendedores</li>
-          <li class="breadcrumb-item active">Novo Vendedor</li>
-        </ol>
-      </nav>
-    </div><!-- End Page Title -->
 
     <section class="section">
 
@@ -58,25 +48,35 @@ if (isset($_POST['salvar'])) {
                 <?php
                 $nome = isset($_POST['nome']) ? $_POST['nome'] : "";
                 $telefone = isset($_POST['telefone']) ? $_POST['telefone'] : "";
-                $comissao = isset($_POST['comissao']) ? $_POST['comissao'] : "";
+                $endereco = isset($_POST['endereco']) ? $_POST['endereco'] : "";
+                $status = isset($_POST['status']) ? $_POST['status'] : "";
                 ?>
               </form>
 
               <!-- Multi Columns Form -->
               <form method="post" class="row g-3">
-                <div class="col-md-12">
+                <div class="col-md-6">
                     <label for="exampleFormControlInput1" class="form-label">Nome</label>
-                    <input type="text" class="form-control" value="<?= $nome ?>" name="nome">
+                    <input type="text" class="form-control" value="<?= $nome ?>" name="nome" required>
                 </div>
 
                 <div class="col-md-6">
-                    <label for="exampleFormControlInput1" class="form-label">Comissão (%)</label>
-                    <input type="text" class="form-control" value="<?= $comissao ?>" name="comissao">
+                    <label for="exampleFormControlInput1" class="form-label">Endereço</label>
+                    <input type="text" class="form-control" value="<?= $endereco ?>" name="endereco">
                 </div>
 
                 <div class="col-md-6">
                     <label for="exampleFormControlInput1" class="form-label">Telefone</label>
-                    <input type="text" id="telefone" class="form-control" value="<?= $telefone ?>" name="telefone" required><span class="mascara"></span>
+                    <input type="text" id="telefone" class="form-control" value="<?= $telefone ?>" name="telefone"><span class="mascara"></span>
+                </div>
+
+                <div class="col-md-6">
+                    <label for="exampleFormControlInput1" class="form-label">Status</label>
+                    <select class="form-select" aria-label="Default select example" value="<?= $status ?>" name="status">
+                    <option selected>Selecione</option>
+                            <option value="ativo">Ativo</option>
+                            <option value="inativo">Inativo</option>
+                    </select>
                 </div>
 
                 <div class="text-center">

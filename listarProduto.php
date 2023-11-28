@@ -2,17 +2,37 @@
 <title>Iara Concept - Produtos</title>
 
 <?php
+session_start();
+if(empty($_SESSION)){
+    print "<script>location.href='index.php';</script>"; 
+}
+?>
+
+<?php
 $corpo = "listar";
 require_once("conexao.php");
 
-//Exclusao//
-if (isset($_GET['id'])) {
-  $sql = "delete FROM produto where id =" . $_GET['id'];
+//EXCLUSÃO//
+if (isset($_GET['id'])) { //verifica se o botão excluir foi clicado
+  $sql = "delete from produto where id = " . $_GET['id'];
   mysqli_query($conexao, $sql);
   $mensagem = "Exclusão realizada com sucesso.";
 }
+
+// Inicializar a variável de pesquisa
+$pesquisaProduto = "";
+
+// Verificar se o formulário de pesquisa foi enviado
+if (isset($_POST['pesquisar'])) {
+  $pesquisaProduto = $_POST['produto'];
+  // Adicionar condição WHERE apenas quando a pesquisa é realizada
+  $V_WHERE = " AND nome LIKE '%$pesquisaProduto%'";
+} else {
+  $V_WHERE = ""; // Inicializar a variável quando não houver pesquisa
+}
+
 //2. Preparar a sql
-$sql = "select * from produto";
+$sql = "SELECT * FROM produto WHERE 1 = 1 $V_WHERE"; 
 
 //3. Executar a SQL
 $resultado = mysqli_query($conexao, $sql);
@@ -22,16 +42,6 @@ $resultado = mysqli_query($conexao, $sql);
 
 
 <main id="main" class="main">
-
-    <div class="pagetitle">
-      <h1>Produtos</h1>
-      <nav>
-        <ol class="breadcrumb">
-          <li class="breadcrumb-item"><a href="index.html">Início</a></li>
-          <li class="breadcrumb-item">Produtos</li>
-        </ol>
-      </nav>
-    </div><!-- End Page Title -->
 
     <section class="section">
 
@@ -44,29 +54,26 @@ $resultado = mysqli_query($conexao, $sql);
               </h5>
               <?php require_once("mensagem.php") ?>
 
-            <!--pesquisar usuarios-->
-            <div class="container">
-                <h4 class="card-title">Pesquisar</h4>
-                <div class="row">
-                    <div class="col-mb-3">
+            <!-- Formulário de pesquisa -->
+            <div class="row">
+                    <div class="mb-3">
                         <form method="post">
                             <div class="input-group">
-                                <input name="nome" type="text" class="form-control" placeholder="Insira o nome do produto">
-                                <button name="pesquisar" stype="button" class="btn btn-primary"><i class="bi bi-search"></i></button>
+                            <input type="text" class="form-control" id="produto" name="produto" 
+                            value="<?php echo $pesquisaProduto; ?>" placeholder="Pesquisar produto">
+                            <button name="pesquisar" stype="button" class="btn btn-primary"><i class="bi bi-search"></i></button>
                             </div>
                         </form>
-                    </div>
-                </div>
-            </div>
 
               <!-- Default Table -->
               <table class="table">
                 <thead>
                     <tr>
                         <th scope="col">ID</th>
-                        <th scope="col">Descrição</th>
+                        <th scope="col">Nome</th>
                         <th scope="col">Valor</th>
-                        <th scope="col">Categoria</th>
+                        <th scope="col">Código de Barras</th>
+                       
                         <th scope="col">Ação</th>
                     </tr>
                 </thead>
@@ -77,14 +84,15 @@ $resultado = mysqli_query($conexao, $sql);
                         <?= $linha['id'] ?>
                         </th>
                         <td>
-                        <?= $linha['descricao'] ?>
+                        <?= $linha['nome'] ?>
                         </td>
                         <td>
                         <?= $linha['valor'] ?>
                         </td>
                         <td>
-                        <?= $linha['categoria_id'] ?>
+                        <?= $linha['codBarras'] ?>
                         </td>
+          
                         <td><a href="alterarProduto.php?id=<?= $linha['id'] ?>" class="btn btn-warning"><i
                             class="bi bi-pencil-square"></i></a>
                         <a href="listarProduto.php? id=<?= $linha['id'] ?>" class="btn btn-danger"

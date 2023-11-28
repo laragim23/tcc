@@ -9,6 +9,13 @@
 </head>
 
 <?php
+session_start();
+if(empty($_SESSION)){  
+    print "<script>location.href='index.php';</script>"; 
+}
+?>
+
+<?php
 require_once("conexao.php");
 
 if (isset($_POST['voltar'])) {
@@ -16,41 +23,77 @@ if (isset($_POST['voltar'])) {
 } 
 
 if (isset($_POST['salvar'])) {
-    $nome = $_POST['nome'];
     $cpf = $_POST['cpf'];
-    $telefone = $_POST['telefone'];
-    $endereco = $_POST['endereco'];
-    $cidade = $_POST['cidade'];
-    $estado = $_POST['estado'];
+
+    // Validar o CPF antes de continuar
+    if (!validarCPF($cpf)) {
+        $mensagem2 = '<span class="mensagem-cpf-invalido">CPF inválido. Por favor, insira um CPF válido.</span>';
+    } else {
+        // Continuar com o restante do código, pois o CPF é válido
+        $nome = $_POST['nome'];
+        $telefone = $_POST['telefone'];
+        $endereco = $_POST['endereco'];
+        $cidade = $_POST['cidade'];
+        $estado = $_POST['estado'];
+        $status = $_POST['status'];
 
     $sql = "insert into cliente 
-            (nome, cpf, telefone, endereco, cidade, estado) values 
-            ('$nome', '$cpf', '$telefone', '$endereco', '$cidade', '$estado')";
+            (nome, cpf, telefone, endereco, cidade, estado, status) values 
+            ('$nome', '$cpf', '$telefone', '$endereco', '$cidade', '$estado', '$status')";
 
     mysqli_query($conexao, $sql);
 
     $mensagem = "Inserido com sucesso.";
+    }
 }
 ?>
+
+<?php
+function validarCPF($cpf) {
+    // Remover caracteres não numéricos
+    $cpf = preg_replace('/[^0-9]/', '', $cpf);
+    
+    // Verificar se o CPF tem 11 dígitos
+    if (strlen($cpf) != 11) {
+        return false;
+    }
+
+    // Verificar se todos os dígitos são iguais
+    if (preg_match('/(\d)\1{10}/', $cpf)) {
+        return false;
+    }
+
+    // Calcular o primeiro dígito verificador
+    $soma = 0;
+    for ($i = 0; $i < 9; $i++) {
+        $soma += $cpf[$i] * (10 - $i);
+    }
+    $resto = $soma % 11;
+    $digito1 = ($resto < 2) ? 0 : (11 - $resto);
+
+    // Calcular o segundo dígito verificador
+    $soma = 0;
+    for ($i = 0; $i < 10; $i++) {
+        $soma += $cpf[$i] * (11 - $i);
+    }
+    $resto = $soma % 11;
+    $digito2 = ($resto < 2) ? 0 : (11 - $resto);
+
+    // Verificar se os dígitos verificadores estão corretos
+    if (($cpf[9] != $digito1) || ($cpf[10] != $digito2)) {
+        return false;
+    }
+
+    return true;
+}
+?>
+
 
 <?php require_once("cabecalho.php") ?>
 
 
-<main id="main" class="main">
-
-    <div class="pagetitle">
-      <h1>Clientes</h1>
-      <nav>
-        <ol class="breadcrumb">
-          <li class="breadcrumb-item"><a href="index.html">Início</a></li>
-          <li class="breadcrumb-item">Clientes</li>
-          <li class="breadcrumb-item active">Novo Cliente</li>
-        </ol>
-      </nav>
-    </div><!-- End Page Title -->
-
+<main id="main" class="main"> 
     <section class="section">
-
         <div class="card">
             <div class="card-body">
               <h5 class="card-title">Novo Cliente</h5>
@@ -65,6 +108,7 @@ if (isset($_POST['salvar'])) {
                 $endereco = isset($_POST['endereco']) ? $_POST['endereco'] : "";
                 $cidade = isset($_POST['cidade']) ? $_POST['cidade'] : "";
                 $estado = isset($_POST['estado']) ? $_POST['estado'] : "";
+                $status = isset($_POST['status']) ? $_POST['status'] : "";
                 ?>
               </form>
 
@@ -72,7 +116,7 @@ if (isset($_POST['salvar'])) {
               <form method="post" class="row g-3">
                 <div class="col-md-12">
                     <label for="exampleFormControlInput1" class="form-label">Nome</label>
-                    <input type="text" class="form-control" value="<?= $nome ?>" name="nome">
+                    <input type="text" class="form-control" value="<?= $nome ?>" name="nome" required>
                 </div>
 
                 <div class="col-md-6">
@@ -82,7 +126,7 @@ if (isset($_POST['salvar'])) {
 
                 <div class="col-md-6">
                     <label for="exampleFormControlInput1" class="form-label">Telefone</label>
-                    <input type="text" id="telefone" class="form-control" value="<?= $telefone ?>" name="telefone" required><span class="mascara"></span>
+                    <input type="text" id="telefone" class="form-control" value="<?= $telefone ?>" name="telefone"><span class="mascara"></span>
                 </div>
                 
                 <div class="col-md-6">
@@ -124,9 +168,18 @@ if (isset($_POST['salvar'])) {
                     <input type="text" class="form-control" value="<?= $cidade ?>" name="cidade">
                 </div>
 
-                <div class="col-md-12">
+                <div class="col-md-6">
                     <label for="exampleFormControlInput1" class="form-label">Endereço</label>
                     <input type="text" class="form-control" value="<?= $endereco ?>" name="endereco">
+                </div> 
+
+                <div class="col-md-6">
+                    <label for="exampleFormControlInput1" class="form-label">Status</label>
+                    <select class="form-select" aria-label="Default select example" value="<?= $status ?>" name="status">
+                    <option selected>Selecione</option>
+                            <option value="ativo">Ativo</option>
+                            <option value="inativo">Inativo</option>
+                    </select>
                 </div>
 
                 <div class="text-center">

@@ -9,10 +9,17 @@
 </head>
 
 <?php
+session_start();
+if(empty($_SESSION)){
+    print "<script>location.href='index.php';</script>"; 
+}
+?>
+
+<?php
 //1. Conectar no BD (IP, usuario, senha, nome do bd)
 require_once("conexao.php");
 
-if (isset($_POST['voltar'])) {
+if (isset($_POST['voltar'])) { 
   header("Location: listarCliente.php");
  }
 
@@ -25,15 +32,17 @@ if (isset($_POST['salvar'])) {
   $endereco = $_POST['endereco'];
   $cidade = $_POST['cidade'];
   $estado = $_POST['estado'];
+  $status = $_POST['status'];
 
   //3. Preparar a SQL
   $sql = "update cliente
     set nome= '$nome',
     cpf = '$cpf',
-    telefone = '$telefone',
+    telefone = '$telefone', 
     cidade = '$cidade',
     endereco = '$endereco',
-    estado = '$estado'
+    estado = '$estado',
+    status = '$status'
     where id = $id";
 
   //4. Executar a SQL
@@ -46,26 +55,13 @@ if (isset($_POST['salvar'])) {
 //Busca usuário selecionado pelo "usuarioListar.php"
 $sql = "select * from cliente where id = " . $_GET['id'];
 $resultado = mysqli_query($conexao, $sql);
-$linha = mysqli_fetch_array($resultado)
+$linha = mysqli_fetch_array($resultado);
   ?>
 
 <?php require_once("cabecalho.php") ?>
 
-<main id="main" class="main">
-
-    <div class="pagetitle">
-      <h1>Clientes</h1>
-      <nav>
-        <ol class="breadcrumb">
-          <li class="breadcrumb-item"><a href="index.html">Início</a></li>
-          <li class="breadcrumb-item">Clientes</li>
-          <li class="breadcrumb-item active">Alterar Cliente</li>
-        </ol>
-      </nav>
-    </div><!-- End Page Title -->
-
+<main id="main" class="main"> 
     <section class="section">
-
         <div class="card">
             <div class="card-body">
               <h5 class="card-title">Alterar Cliente</h5>
@@ -80,6 +76,7 @@ $linha = mysqli_fetch_array($resultado)
                 $endereco = isset($_POST['endereco']) ? $_POST['endereco'] : "";
                 $cidade = isset($_POST['cidade']) ? $_POST['cidade'] : "";
                 $estado = isset($_POST['estado']) ? $_POST['estado'] : "";
+                $status = isset($_POST['status']) ? $_POST['status'] : "";
                 ?>
               </form>
 
@@ -88,7 +85,7 @@ $linha = mysqli_fetch_array($resultado)
               <input type="hidden" class="form-control" value="<?= $linha['id'] ?>" name="id">
                 <div class="col-md-12">
                     <label for="exampleFormControlInput1" class="form-label">Nome</label>
-                    <input type="text" class="form-control" value="<?=$linha['nome'] ?>" name="nome">
+                    <input type="text" class="form-control" value="<?=$linha['nome'] ?>" name="nome" required>
                 </div>
 
                 <div class="col-md-6">
@@ -98,7 +95,7 @@ $linha = mysqli_fetch_array($resultado)
 
                 <div class="col-md-6">
                     <label for="exampleFormControlInput1" class="form-label">Telefone</label>
-                    <input type="text" id="telefone" class="form-control" value="<?=$linha['telefone'] ?>" name="telefone" required><span class="mascara"></span>
+                    <input type="text" id="telefone" class="form-control" value="<?=$linha['telefone'] ?>" name="telefone"><span class="mascara"></span>
                 </div>
                 
                 <div class="col-md-6">
@@ -140,9 +137,18 @@ $linha = mysqli_fetch_array($resultado)
                     <input type="text" class="form-control" value="<?=$linha['cidade'] ?>" name="cidade">
                 </div>
 
-                <div class="col-md-12">
+                <div class="col-md-6">
                     <label for="exampleFormControlInput1" class="form-label">Endereço</label>
                     <input type="text" class="form-control" value="<?=$linha['endereco'] ?>" name="endereco">
+                </div>
+
+                <div class="col-md-6">
+                    <label for="exampleFormControlInput1" class="form-label">Status</label>
+                    <select class="form-select" aria-label="Default select example" value="<?= $status ?>" name="status">
+                    <option selected>Selecione</option>
+                            <option value="ativo">Ativo</option>
+                            <option value="inativo">Inativo</option>
+                    </select>
                 </div>
 
                 <div class="text-center">

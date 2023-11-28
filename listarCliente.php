@@ -2,73 +2,89 @@
 <title>Iara Concept - Clientes</title>
 
 <?php
+session_start();
+if(empty($_SESSION)){
+    print "<script>location.href='index.php';</script>"; 
+}
+?>
+ 
+<?php
 //1. conectar no banco de dados (ip, usuario, senha, nome do banco)
 
 require_once("conexao.php");
 $corpo = "";
 
-//EXCLUSÃO//
-if (isset($_GET['id'])) { //verifica se o botão excluir foi clicado
-  $sql = "delete from cliente where id = " . $_GET['id'];
-  mysqli_query($conexao, $sql);
+if (isset($_GET['id'])) { 
+  // Excluir registros relacionados na tabela compravendaproduto
+  $sqlExcluircompravendaProduto = "DELETE FROM compravendaproduto WHERE compravenda_id IN (SELECT id FROM compravenda WHERE cliente_id = " . $_GET['id'] . ")";
+  mysqli_query($conexao, $sqlExcluircompravendaProduto);
+
+  // Excluir registros relacionados na tabela condicional
+  $sqlExcluircompravenda = "DELETE FROM compravenda WHERE cliente_id = " . $_GET['id'];
+  mysqli_query($conexao, $sqlExcluircompravenda);
+
+
+  // Excluir registros relacionados na tabela condicionalproduto
+  $sqlExcluirCondicionaisProduto = "DELETE FROM condicionalproduto WHERE condicional_id IN (SELECT id FROM condicional WHERE cliente_id = " . $_GET['id'] . ")";
+  mysqli_query($conexao, $sqlExcluirCondicionaisProduto);
+
+  // Excluir registros relacionados na tabela condicional
+  $sqlExcluirCondicionais = "DELETE FROM condicional WHERE cliente_id = " . $_GET['id'];
+  mysqli_query($conexao, $sqlExcluirCondicionais);
+
+  // Agora você pode excluir o cliente
+  $sqlExcluirCliente = "DELETE FROM cliente WHERE id = " . $_GET['id'];
+  mysqli_query($conexao, $sqlExcluirCliente);
+
   $mensagem = "Exclusão realizada com sucesso.";
 }
 
-//geração de sql para relatório
-$V_WHERE ="";
-if (isset($_POST['pesquisar'])) { //se clicou no botao pesquisar
-  $V_WHERE= " and nome like '%" . $_POST['nome']."%' ";
+
+// Inicializar a variável de pesquisa
+$pesquisaCliente = "";
+
+// Verificar se o formulário de pesquisa foi enviado
+if (isset($_POST['pesquisar'])) {
+  $pesquisaCliente = $_POST['cliente'];
+  // Adicionar condição WHERE apenas quando a pesquisa é realizada
+  $V_WHERE = " AND nome LIKE '%$pesquisaCliente%'";
+} else {
+  $V_WHERE = ""; // Inicializar a variável quando não houver pesquisa
 }
 
 //2. Preparar a sql
-$sql = "select * from cliente
-where 1 = 1" . $V_WHERE;
+$sql = "SELECT * FROM cliente WHERE 1 = 1 $V_WHERE"; 
 
 //3. Executar a SQL
 $resultado = mysqli_query($conexao, $sql);
 
+require_once("cabecalho.php");
+
 ?>
 
-<?php require_once("cabecalho.php") ?>
-
-
 <main id="main" class="main">
-
-  <div class="pagetitle">
-    <h1>Clientes</h1>
-    <nav>
-      <ol class="breadcrumb">
-        <li class="breadcrumb-item"><a href="index.html">Início</a></li>
-        <li class="breadcrumb-item active">Clientes</li>
-      </ol>
-    </nav>
-  </div><!-- End Page Title -->
 
   <section class="section">
 
     <div class="card">
       <div class="card-body">
-        <h5 class="card-title">Lista de Clientes
+        <h5 class="card-title">Lista de Clientes 
           <a href="cadastrarCliente.php"><button type="button" class="btn btn-primary mb-2">+
               <span class="badge bg-white text-primary"></span>
             </button></a>
         </h5>
         <?php require_once("mensagem.php") ?>
 
-        <!--pesquisar usuarios-->
-        <div class="container">
-          <h4 class="card-title">Pesquisar</h4>
-          <div class="row">
-            <div class="col-mb-3">
-              <form method="post">
-                <div class="input-group">
-                  <input name="nome" type="text" class="form-control" placeholder="Insira o nome do cliente">
-                  <button name="pesquisar" stype="button" class="btn btn-primary"><i class="bi bi-search"></i></button>
-                </div>
-              </form>
-            </div>
-          </div>
-        </div>
+        <!-- Formulário de pesquisa -->
+        <div class="row">
+                    <div class="mb-3">
+                        <form method="post">
+                            <div class="input-group">
+                            <input type="text" class="form-control" id="cliente" name="cliente" 
+                            value="<?php echo $pesquisaCliente; ?>" placeholder="Pesquisar cliente">
+                            <button name="pesquisar" stype="button" class="btn btn-primary"><i class="bi bi-search"></i></button>
+                            </div>
+                        </form>
 
         <!-- Default Table -->
         <table class="table">
@@ -76,8 +92,8 @@ $resultado = mysqli_query($conexao, $sql);
             <tr>
               <th scope="col">ID</th>
               <th scope="col">Nome</th>
+              <th scope="col">CPF</th>
               <th scope="col">Telefone</th>
-              <th scope="col">Endereço</th>
               <th scope="col">Ação</th>
             </tr>
           </thead>
@@ -91,10 +107,10 @@ $resultado = mysqli_query($conexao, $sql);
                   <?= $linha['nome'] ?>
                 </td>
                 <td>
-                  <?= $linha['telefone'] ?>
+                  <?= $linha['cpf'] ?>
                 </td>
                 <td>
-                  <?= $linha['endereco'] ?>
+                  <?= $linha['telefone'] ?>
                 </td>
                 <td><a href="alterarCliente.php?id=<?= $linha['id'] ?>" class="btn btn-warning"><i
                       class="bi bi-pencil-square"></i></a>
@@ -131,7 +147,8 @@ $resultado = mysqli_query($conexao, $sql);
                         <span><b>Telefone: </b><span id="modalTelefone"></span></span> <br>
                         <span><b>Cidade: </b><span id="modalCidade"></span></span> <br>
                         <span><b>Estado: </b><span id="modalEstado"></span></span> <br>
-                        <span><b>Endereco: </b><span id="modalEndereco"></span></span><br>
+                        <span><b>Endereço: </b><span id="modalEndereco"></span></span><br>
+                        <span><b>Status: </b><span id="modalStatus"></span></span><br>
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
@@ -141,20 +158,6 @@ $resultado = mysqli_query($conexao, $sql);
         </div>
 
 </main><!-- End #main -->
-
-  <!-- ======= Footer ======= -->
-  <footer id="footer" class="footer">
-    <div class="copyright">
-      &copy; Copyright <strong><span>NiceAdmin</span></strong>. All Rights Reserved
-    </div>
-    <div class="credits">
-      <!-- All the links in the footer should remain intact. -->
-      <!-- You can delete the links only if you purchased the pro version. -->
-      <!-- Licensing information: https://bootstrapmade.com/license/ -->
-      <!-- Purchase the pro version with working PHP/AJAX contact form: https://bootstrapmade.com/nice-admin-bootstrap-admin-html-template/ -->
-      Designed by <a href="https://bootstrapmade.com/">BootstrapMade</a>
-    </div>
-  </footer><!-- End Footer -->
 
   <!-- Vendor JS Files -->
   <script src="assets/vendor/apexcharts/apexcharts.min.js"></script>
@@ -187,6 +190,7 @@ $resultado = mysqli_query($conexao, $sql);
                     document.getElementById('modalCpf').textContent = data.cpf;
                     document.getElementById('modalCidade').textContent = data.cidade;
                     document.getElementById('modalEstado').textContent = data.estado;
+                    document.getElementById('modalStatus').textContent = data.status;
 
 
                     modal.style.display = 'block'; // Defina o estilo de exibição como 'block' para mostrar o modal

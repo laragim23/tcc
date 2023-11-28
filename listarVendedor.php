@@ -2,6 +2,13 @@
 <title>Iara Concept - Vendedor</title>
 
 <?php
+session_start();
+if(empty($_SESSION)){
+    print "<script>location.href='index.php';</script>"; 
+}
+?>
+
+<?php
 //1. conectar no banco de dados (ip, usuario, senha, nome do banco)
 
 require_once("conexao.php");
@@ -27,16 +34,6 @@ $resultado = mysqli_query($conexao, $sql);
 
 <main id="main" class="main">
 
-    <div class="pagetitle">
-      <h1>Vendedores</h1>
-      <nav>
-        <ol class="breadcrumb">
-          <li class="breadcrumb-item"><a href="index.html">Início</a></li>
-          <li class="breadcrumb-item active">Vendedores</li>
-        </ol>
-      </nav>
-    </div><!-- End Page Title -->
-
     <section class="section">
 
           <div class="card">
@@ -55,7 +52,8 @@ $resultado = mysqli_query($conexao, $sql);
                         <th scope="col">ID</th>
                         <th scope="col">Nome</th>
                         <th scope="col">Telefone</th>
-                        <th scope="col">Comissão (%)</th>
+                        <th scope="col">Endereço</th>
+                        <th scope="col">Status</th>
                         <th scope="col">Ação</th>
                     </tr>
                 </thead>
@@ -72,7 +70,10 @@ $resultado = mysqli_query($conexao, $sql);
                         <?= $linha['telefone'] ?>
                         </td>
                         <td>
-                        <?= $linha['comissao'] ?>
+                        <?= $linha['endereco'] ?>
+                        </td>
+                        <td>
+                        <?= $linha['status'] ?>
                         </td>
                         <td><a href="alterarVendedor.php?id=<?= $linha['id'] ?>" class="btn btn-warning"><i
                             class="bi bi-pencil-square"></i></a>

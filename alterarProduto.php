@@ -2,6 +2,13 @@
 <title>Iara Concept - Alterar Produto</title>
 
 <?php
+session_start();
+if(empty($_SESSION)){
+    print "<script>location.href='index.php';</script>"; 
+}
+?>
+
+<?php
 //1. Conectar no BD (IP, usuario, senha, nome do bd)
 require_once("conexao.php");
 
@@ -12,15 +19,15 @@ if (isset($_POST['voltar'])) {
 if (isset($_POST['salvar'])) {
   //2. Receber os dados para inserir no BD
   $id = $_POST['id'];
-  $descricao = $_POST['descricao'];
+  $nome = $_POST['nome'];
   $valor = $_POST['valor'];
-  $categoria_id = $_POST['categoria_id'];
+  $codBarras = $_POST['codBarras'];
 
   //3. Preparar a SQL
   $sql = "update produto
-    set descricao= '$descricao',
+    set nome= '$nome',
     valor = '$valor',
-    categoria_id = '$categoria_id'
+    codBarras = '$codBarras'
     where id = $id";
 
   //4. Executar a SQL
@@ -41,17 +48,6 @@ $linha = mysqli_fetch_array($resultado)
 
 <main id="main" class="main">
 
-    <div class="pagetitle">
-      <h1>Produtos</h1>
-      <nav>
-        <ol class="breadcrumb">
-          <li class="breadcrumb-item"><a href="index.html">Início</a></li>
-          <li class="breadcrumb-item">Produtos</li>
-          <li class="breadcrumb-item active">Alterar Produto</li>
-        </ol>
-      </nav>
-    </div><!-- End Page Title -->
-
     <section class="section">
 
         <div class="card">
@@ -62,41 +58,28 @@ $linha = mysqli_fetch_array($resultado)
 
               <form method="post" class="container">
                 <?php
+                $codBarras = isset($_POST['codBarras']) ? $_POST['codBarras'] : "";
                 $valor = isset($_POST['valor']) ? $_POST['valor'] : "";
-                $descricao = isset($_POST['descricao']) ? $_POST['descricao'] : "";
+                $nome = isset($_POST['nome']) ? $_POST['nome'] : "";
                 ?>
               </form>
 
               <!-- Multi Columns Form -->
               <form method="post" class="row g-3">
-              <input type="hidden" class="form-control" value="<?= $linha['id'] ?>" name="id">
+              <input type="hidden" class="form-control" value="<?= $linha['id'] ?>" name="id"> 
                 <div class="col-md-12">
-                    <label for="exampleFormControlInput1" class="form-label">Descrição</label>
-                    <input type="text" class="form-control" value="<?=$linha['descricao'] ?>" name="descricao">
+                    <label for="exampleFormControlInput1" class="form-label">Nome</label>
+                    <input type="text" class="form-control" value="<?=$linha['nome'] ?>" name="nome" required>
                 </div>
 
                 <div class="col-md-6">
                     <label for="exampleFormControlInput1" class="form-label">Valor</label>
-                    <input type="text" class="form-control" value="<?=$linha['valor'] ?>" name="valor">
+                    <input type="text" class="form-control" value="<?=$linha['valor'] ?>" name="valor" required>
                 </div>
 
                 <div class="col-md-6">
-                    <label for="categoria_id" class="form-label">Categoria</label>
-                    
-                        <select name="categoria_id" class="form-select" value="<?=$linha['categoria_id'] ?>" name="categoria_id">
-                        <option selected>Selecione</option>
-                        <?php
-                        $sql = "select * from categoria order by nome";
-                        $resultado = mysqli_query($conexao, $sql);
-
-                        while ($linha = mysqli_fetch_array($resultado)):
-                            $id = $linha['id'];
-                            $nome = $linha['nome'];
-
-                            echo "<option value='{$id}'>{$nome}</option>";
-                        endwhile;
-                        ?>
-                        </select>   
+                    <label for="exampleFormControlInput1" class="form-label">Código de barras</label>
+                    <input type="text" class="form-control" value="<?=$linha['codBarras'] ?>" name="codBarras" required>
                 </div>
 
                 <div class="text-center">
