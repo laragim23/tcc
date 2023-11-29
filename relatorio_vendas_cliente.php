@@ -92,7 +92,22 @@ unset($_SESSION['valorTotal']);
                                 <td>
                                 <?= date("d/m/Y", strtotime($linha['datacriacao']))?>
                                 </td>
-                                
+                                <td>
+                                    <?php
+                                    $total = 0;
+                                    $sqlProduto = "select quantidade, valorunitario from compravendaproduto where compravenda_id = " . $linha['id'];
+                                    $resultadoVendaProduto = mysqli_query($conexao, $sqlProduto);
+                                    if (mysqli_num_rows($resultadoVendaProduto) > 0) {
+                                    
+                                        while ($linhaVendaProduto = mysqli_fetch_array($resultadoVendaProduto)) {
+                                            $total += ($linhaVendaProduto['quantidade'] * $linhaVendaProduto['valorunitario']);
+                                        }
+                                    }
+                                    $sqlDesconto = "select desconto from compravenda where id = " . $linha['id'];
+                                    $resultadoDesconto = mysqli_query($conexao, $sqlDesconto);
+                                    $linhaDesconto = mysqli_fetch_array($resultadoDesconto);
+                                    echo $total - $linhaDesconto['desconto']; ?>
+                                </td>
                                 <td><a href="alterarVenda.php?id=<?= $linha['id'] ?>" class="btn btn-warning"><i
                                     class="bi bi-pencil-square"></i></a>
 
