@@ -14,7 +14,7 @@ require_once("conexao.php");
 
 if(isset($_POST['finalizar'])) {
 
-    $id = $_POST['id']; // Adicione essa linha para obter o ID da venda
+    $id = $_POST['id']; 
 
     $cliente_id = $_POST['cliente'];
     $vendedor_id = $_POST['vendedor_id'];
@@ -47,7 +47,7 @@ if(isset($_POST['finalizar'])) {
 
     }
 
-    // Busca a venda selecionada
+// Busca a venda selecionada
 $idCondicional = $_GET['id'];
 $sqlCondicional = "SELECT * FROM condicional WHERE id = $idCondicional";
 $resultadoCondicional = mysqli_query($conexao, $sqlCondicional);
