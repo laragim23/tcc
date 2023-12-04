@@ -46,22 +46,12 @@ if(empty($_SESSION)){
 
               <div class="col-md-4">
                   <a class="btn btn-large btn-danger m-2 d-flex flex-column 
-                  justify-content-center align-items-center" style="width: 200px; height: 200px" href="condicional.php">
-                    <i class="bi bi-basket" style="font-size: 40px"></i>
-                    <span style="font-size: 30px">Cadastrar Condicional</span>
-                  </a>
-              </div>
-
-              <div class="col-md-4">
-                  <a class="btn btn-large btn-danger m-2 d-flex flex-column 
                   justify-content-center align-items-center" style="width: 200px; height: 200px" href="cadastrarProduto.php">
                     <i class="bi bi-dropbox" style="font-size: 40px"></i>
                     <span style="font-size: 30px">Cadastrar Produto</span>
                   </a> 
               </div>
-            </div>
-
-            <div class="row">
+          
               <div class="col-md-4">
                   <a class="btn btn-large btn-danger m-2 d-flex flex-column 
                   justify-content-center align-items-center" style="width: 200px; height: 200px" href="cadastrarCliente.php">
@@ -69,7 +59,9 @@ if(empty($_SESSION)){
                     <span style="font-size: 30px">Cadastrar Cliente</span>
                   </a>
               </div>
+            </div>
 
+            <div class="row">
               <div class="col-md-4">
                   <a class="btn btn-large btn-danger m-2 d-flex flex-column 
                   justify-content-center align-items-center" style="width: 200px; height: 200px" href="cadastrarVendedor.php">
@@ -83,7 +75,16 @@ if(empty($_SESSION)){
                   justify-content-center align-items-center" style="width: 200px; height: 200px" 
                   href="relatorio_vendas_cliente.php">
                     <i class="bi bi-clipboard-data" style="font-size: 40px"></i>
-                    <span style="font-size: 30px">Relatórios</span>
+                    <span style="font-size: 30px">Relatório de Venda</span>
+                  </a>
+              </div>
+
+              <div class="col-md-4">
+                  <a class="btn btn-large btn-danger m-2 d-flex flex-column 
+                  justify-content-center align-items-center" style="width: 200px; height: 200px" 
+                  href="relatorio_condicionais_cliente.php">
+                    <i class="bi bi-clipboard-data" style="font-size: 40px"></i>
+                    <span style="font-size: 30px">Relatório de Condicional</span>
                   </a>
               </div>
             </div>
