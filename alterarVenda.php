@@ -259,6 +259,7 @@ require_once("cabecalho.php");
                                                     // Antes da função Adicionar(), adicione este bloco de código
                                                     $(document).on("click", ".btnExcluir", Excluir);
                                                 </script>
+                                                
                                                 <?php
                                                 if (isset($linhaVenda['id'])) {
                                                     $sqlProduto = "SELECT p.nome AS nome, p.id as idProduto, cvp.quantidade, cvp.valorUnitario
@@ -272,11 +273,11 @@ require_once("cabecalho.php");
                                                         while ($linhaVendaProduto = mysqli_fetch_array($resultadoVendaProduto)) {
                                                             echo '<tr id="produto_<?php echo $produtoId; ?>">';
                                                             echo '<tr>';
-                                                            echo '<th scope="col">' . $linhaVendaProduto['nome'] . '</th>';
-                                                            echo '<th scope="col" class="text-right">' . $linhaVendaProduto['quantidade'] . '</th>';
-                                                            echo '<th scope="col" class="text-right">' . $linhaVendaProduto['valorUnitario'] . '</th>';
-                                                            echo '<th scope="col" class="text-right">' . ($linhaVendaProduto['valorUnitario'] * $linhaVendaProduto['quantidade']) . '</th>';
-                                                            echo '<th scope="col" class="text-center">';
+                                                            echo '<th style="font-weight: normal;" class="text-right">' . $linhaVendaProduto['nome'] . '</th>';
+                                                            echo '<th style="font-weight: normal;" class="text-right">' . $linhaVendaProduto['quantidade'] . '</th>';
+                                                            echo '<th style="font-weight: normal;" scope="col" class="text-right">' . $linhaVendaProduto['valorUnitario'] . '</th>';
+                                                            echo '<th style="font-weight: normal;" scope="col" class="text-right">' . ($linhaVendaProduto['valorUnitario'] * $linhaVendaProduto['quantidade']) . '</th>';
+                                                            echo '<th style="font-weight: normal;" scope="col" class="text-center">';
                                                             echo '<button class="btn btn-danger btn-sm btnExcluir" type="button">
                                                             <a style="text-decoration: none" href="alterarvenda.php?id=' . $idVenda . '&idProduto=' . $linhaVendaProduto['idProduto'] . '" onclick="return confirm(\'Deseja mesmo excluir o cadastro?\')"><i class="bi bi-trash3-fill text-dark"></i></a>';
                                                             echo '</button>';
