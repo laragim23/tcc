@@ -32,9 +32,7 @@ if (isset($_POST['finalizar'])) {
     $formaPagamento = $_POST['formaPagamento'];
     $operacao = $_POST['operacao'];
     $situacao = $_POST['situacao'];
-
-    echo $formaPagamento . '' . $operacao . '' . $situacao . '' . $idVenda;
-
+    
     // Atualizar os campos no banco de dados
     $sqlUpdateCampos = "UPDATE compravenda 
                      SET formaPagamento = '$formaPagamento', 
@@ -192,14 +190,26 @@ require_once("cabecalho.php");
                                     </div>
 
                                     <div class="col-md-9">
-                                        <h3 for="cliente_id" class="form-label"><b>Cliente:</b>
+                                        <label for="cliente_id" class="form-label">Cliente</label>
+                                        <select class="form-select" name="cliente[]">
                                             <?php
-                                            $sql = "select * from cliente order by nome";
+                                            // Correção na consulta SQL e remoção do 'cliente_id' na condição WHERE
+                                            $sql = "SELECT cliente.id, cliente.nome FROM compravenda
+                                            INNER JOIN cliente ON compravenda.cliente_id = cliente.id 
+                                            WHERE compravenda.id = " . $idVenda . "
+                                            ORDER BY cliente.nome";
+
                                             $resultado = mysqli_query($conexao, $sql);
-                                            $linha = mysqli_fetch_array($resultado);
-                                            echo $linha['nome'];
+
+                                            while ($linha = mysqli_fetch_array($resultado)):
+                                                $cliente_id = $linha['id'];
+                                                $nome = $linha['nome'];
+
+                                                // Correção na atribuição de valores ao option
+                                                echo "<option " . ($cliente_id == $linhaVenda['cliente_id'] ? 'selected' : '') . " value='{$cliente_id}'>{$nome}</option>";
+                                            endwhile;
                                             ?>
-                                        </h3>
+                                        </select>
                                     </div>
 
                                     <div class="col-md-3">
@@ -213,17 +223,30 @@ require_once("cabecalho.php");
                                     </div>
 
                                     <div class="col-md-9">
-                                        <h3 for="vendedor_id" class="form-label"><b>Vendedor:</b>
-                                        <?php
-                                        $sql = "select * from vendedor order by nome";
-                                        $resultado = mysqli_query($conexao, $sql);
-                                        $linha = mysqli_fetch_array($resultado);
-                                        echo $linha['nome']; ?>
-                                        </h3>
+                                        <label for="">Vendedor</label>
+                                        <select class="form-select" name="vendedor[]">
+                                            <?php
+                                            // Correção na consulta SQL e remoção do 'cliente_id' na condição WHERE
+                                            $sql = "SELECT vendedor.id, vendedor.nome FROM compravenda
+                                            INNER JOIN vendedor ON compravenda.vendedor_id = vendedor.id 
+                                            WHERE compravenda.id = " . $idVenda . "
+                                            ORDER BY vendedor.nome";
+
+                                            $resultado = mysqli_query($conexao, $sql);
+
+                                            while ($linha = mysqli_fetch_array($resultado)):
+                                                $cliente_id = $linha['id'];
+                                                $nome = $linha['nome'];
+
+                                                // Correção na atribuição de valores ao option
+                                                echo "<option " . ($cliente_id == $linhaVenda['cliente_id'] ? 'selected' : '') . " value='{$cliente_id}'>{$nome}</option>";
+                                            endwhile;
+                                            ?>
+                                        </select>
                                     </div>
                                 </div>
                                 <hr>
-                                
+
 
                                 <div class="row">
                                     <div class="col-md-12">
@@ -259,7 +282,7 @@ require_once("cabecalho.php");
                                                     // Antes da função Adicionar(), adicione este bloco de código
                                                     $(document).on("click", ".btnExcluir", Excluir);
                                                 </script>
-                                                
+
                                                 <?php
                                                 if (isset($linhaVenda['id'])) {
                                                     $sqlProduto = "SELECT p.nome AS nome, p.id as idProduto, cvp.quantidade, cvp.valorUnitario
