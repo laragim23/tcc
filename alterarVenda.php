@@ -223,7 +223,7 @@ require_once("cabecalho.php");
                                     </div>
 
                                     <div class="col-md-9">
-                                        <label for="">Vendedor</label>
+                                        <label for="" class="form-label">Vendedor</label>
                                         <select class="form-select" name="vendedor[]">
                                             <?php
                                             // Correção na consulta SQL e remoção do 'cliente_id' na condição WHERE
