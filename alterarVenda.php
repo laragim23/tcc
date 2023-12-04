@@ -213,7 +213,7 @@ require_once("cabecalho.php");
                                     </div>
 
                                     <div class="col-md-9">
-                                        <h3 for="vendedor_id" class="form-label"><b>Vendedor</b>
+                                        <h3 for="vendedor_id" class="form-label"><b>Vendedor:</b>
                                         <?php
                                         $sql = "select * from vendedor order by nome";
                                         $resultado = mysqli_query($conexao, $sql);
