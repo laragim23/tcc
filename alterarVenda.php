@@ -10,8 +10,6 @@ if (empty($_SESSION)) {
 
 <?php
 
-
-
 require_once("conexao.php");
 
 if (isset($_GET['id'])) {
@@ -27,13 +25,11 @@ if (isset($_GET["idProduto"])) {
 }
 
 if (isset($_POST['finalizar'])) {
-    // ... (seu código existente)
 
     $formaPagamento = $_POST['formaPagamento'];
     $operacao = $_POST['operacao'];
     $situacao = $_POST['situacao'];
     
-    // Atualizar os campos no banco de dados
     $sqlUpdateCampos = "UPDATE compravenda 
                      SET formaPagamento = '$formaPagamento', 
                          operacao = '$operacao', 
@@ -41,8 +37,6 @@ if (isset($_POST['finalizar'])) {
                      WHERE id = $idVenda";
     mysqli_query($conexao, $sqlUpdateCampos);
 
-
-    // Mostrar mensagem de sucesso
     $mensagem = "Alterado com sucesso.";
 }
 
@@ -65,7 +59,6 @@ if (mysqli_num_rows($resultadoVendaProduto) > 0) {
     }
 }
 
-// Antes do cabeçalho HTML, adicione este bloco de código
 $sqlProduto = "SELECT cvp.quantidade, cvp.valorUnitario, p.nome 
                FROM compravendaproduto cvp 
                JOIN produto p ON cvp.produto_id = p.id 
@@ -79,7 +72,6 @@ if (mysqli_num_rows($resultadoVendaProduto) > 0) {
             'nome' => $linhaVendaProduto['nome'],
             'quantidade' => $linhaVendaProduto['quantidade'],
             'valorunitario' => $linhaVendaProduto['valorUnitario'],
-            // Adicione outros campos necessários
         );
         $productos[] = $produto;
     }
@@ -89,17 +81,11 @@ if (mysqli_num_rows($resultadoVendaProduto) > 0) {
 $sqlProdutos = "SELECT * FROM compravendaproduto WHERE compravenda_id = $idVenda";
 $resultadoProdutos = mysqli_query($conexao, $sqlProdutos);
 
-// Initialize $produto_id
 $produto_id = isset($_POST['produto_id']) ? $_POST['produto_id'] : [];
 
-// Restante do código...
-
-// Loop para exibir os produtos
 for ($i = 0; $i < count($produto_id); $i++) {
     $produtoId = $produto_id[$i];
-    // Restante do código...
 }
-
 
 $produtos_json = json_encode($productos);
 
@@ -118,15 +104,13 @@ require_once("cabecalho.php");
     <section class="section">
         <div class="container card d-flex card-body" style="margin: auto; width: 100%">
             <div class="row" style="width: 100%">
-                <h5 class="card-title">Alterar Venda</h5>
+                <h5 class="card-title">Alterar Condicional</h5>
                 <?php require_once("mensagem.php") ?>
                 <div class="container" style="margin: 0px; width: 100%">
                     <form name="form" action="alterarVenda.php" method="post">
                         <input type="hidden" class="form-control" value="<?= $linhaVenda['id'] ?>" name="id">
 
                         <div class="row">
-
-                            <!-- div Resumo -->
                             <div class="col-md-4 order-md-2 mb-4">
                                 <h4 class="d-flex justify-content-between align-items-center mb-3">
                                     <span class="text-muted">Resumo</span>
@@ -267,19 +251,13 @@ require_once("cabecalho.php");
                                                     $quantidadeProduto = $quantidade[$i];
                                                     $valorProduto = $valor[$i];
 
-                                                    // Adicione o campo excluido[] para cada produto
                                                     echo '<input type="hidden" name="excluido[' . $produtoId . ']" value="0">';
 
-                                                    // Restante do seu código para exibir os campos do produto...
                                                     echo '<td><input type="text" class="form-control" name="quantidade[]" value="' . $quantidadeProduto . '"></td>';
                                                     echo '<td><input type="text" class="form-control" name="valor[]" value="' . $valorProduto . '"></td>';
-                                                    // Adicione outros campos necessários
-                                                
-                                                    // Restante do seu código...
                                                 }
                                                 ?>
                                                 <script>
-                                                    // Antes da função Adicionar(), adicione este bloco de código
                                                     $(document).on("click", ".btnExcluir", Excluir);
                                                 </script>
 
