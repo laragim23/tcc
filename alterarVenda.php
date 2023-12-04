@@ -277,8 +277,8 @@ require_once("cabecalho.php");
                                                             echo '<th scope="col" class="text-right">' . $linhaVendaProduto['valorUnitario'] . '</th>';
                                                             echo '<th scope="col" class="text-right">' . ($linhaVendaProduto['valorUnitario'] * $linhaVendaProduto['quantidade']) . '</th>';
                                                             echo '<th scope="col" class="text-center">';
-                                                            echo '<a href="alterarvenda.php?id=' . $idVenda . '&idProduto=' . $linhaVendaProduto['idProduto'] . '" onclick="return confirm(\'Deseja mesmo excluir o cadastro?\')"><i class="bi bi-trash3-fill"></i></a>';
-                                                            echo '<i class="bi bi-trash3-fill"></i>';
+                                                            echo '<button class="btn btn-danger btn-sm btnExcluir" type="button">
+                                                            <a style="text-decoration: none" href="alterarvenda.php?id=' . $idVenda . '&idProduto=' . $linhaVendaProduto['idProduto'] . '" onclick="return confirm(\'Deseja mesmo excluir o cadastro?\')"><i class="bi bi-trash3-fill text-dark"></i></a>';
                                                             echo '</button>';
                                                             echo '</th>';
                                                             echo '</tr>';
