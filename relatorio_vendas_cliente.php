@@ -175,8 +175,8 @@ unset($_SESSION['valorTotal']);
                                 <?= $linha['situacao'] ?>
                                 </td>
                                 <td>
-                                <a href="alterarVenda.php?id=<?= $linha['id'] ?>" class="btn btn-warning"><i
-                                    class="bi bi-pencil-square"></i></a>
+                                <a class="btn btn-info" data-bs-toggle="modal" data-bs-target="#modalSituacao">
+                                    <i class="bi bi-pencil-square"></i></a>
 
                                 <a href="relatorio_vendas_cliente.php? id=<?= $linha['id'] ?>" class="btn btn-danger"
                                     onclick="return confirm('Deseja excluir mesmo?')">
@@ -191,6 +191,35 @@ unset($_SESSION['valorTotal']);
             </div>    
         </div>        
     </section>
+    <div class="modal fade" id="modalSituacao" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h2 class="modal-title fs-5" id="exampleModalLabel">
+                            Situação da Venda
+                        </h2>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <form action="" method="post">
+                        <div class="modal-body">
+                            <select type="hidden" class="form-select" name="situacao" id="selectbox"
+                                data-selected="">
+                                <option class="fonte-status" value="" disabled="disabled" placeholder="Situação">Situação
+                                </option>
+                                <option value="Pago" selected="selected">Pago</option>
+                                <option value="Pendente">Pendente</option>
+                                <option value="Atrasado">Atrasado</option>
+                                <option value="Devolvido">Devolvido</option>
+                            </select>
+                        
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+                            <button class="btn btn-primary" type="submit" name="salvar">Salvar</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
 </main>
 
     <?php

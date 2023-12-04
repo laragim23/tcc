@@ -25,11 +25,11 @@ if (isset($_POST['voltar'])) {
 if (isset($_POST['salvar'])) {
     $cpf = $_POST['cpf'];
 
-    // Validar o CPF antes de continuar
+    // validação de cpf
     if (!validarCPF($cpf)) {
         $mensagem2 = '<span class="mensagem-cpf-invalido">CPF inválido. Por favor, insira um CPF válido.</span>';
     } else {
-        // Continuar com o restante do código, pois o CPF é válido
+        // se o cpf é válido -> continua o código
         $nome = $_POST['nome'];
         $telefone = $_POST['telefone'];
         $endereco = $_POST['endereco'];
@@ -50,20 +50,20 @@ if (isset($_POST['salvar'])) {
 
 <?php
 function validarCPF($cpf) {
-    // Remover caracteres não numéricos
+    // remove caracteres não numéricos
     $cpf = preg_replace('/[^0-9]/', '', $cpf);
     
-    // Verificar se o CPF tem 11 dígitos
+    // verifica se o CPF tem 11 dígitos
     if (strlen($cpf) != 11) {
         return false;
     }
 
-    // Verificar se todos os dígitos são iguais
+    // verifica se todos os dígitos são iguais
     if (preg_match('/(\d)\1{10}/', $cpf)) {
         return false;
     }
 
-    // Calcular o primeiro dígito verificador
+    // calcula o primeiro dígito verificador
     $soma = 0;
     for ($i = 0; $i < 9; $i++) {
         $soma += $cpf[$i] * (10 - $i);
@@ -71,7 +71,7 @@ function validarCPF($cpf) {
     $resto = $soma % 11;
     $digito1 = ($resto < 2) ? 0 : (11 - $resto);
 
-    // Calcular o segundo dígito verificador
+    // calcula o segundo dígito verificador
     $soma = 0;
     for ($i = 0; $i < 10; $i++) {
         $soma += $cpf[$i] * (11 - $i);
@@ -79,7 +79,7 @@ function validarCPF($cpf) {
     $resto = $soma % 11;
     $digito2 = ($resto < 2) ? 0 : (11 - $resto);
 
-    // Verificar se os dígitos verificadores estão corretos
+    // verifica se os dígitos verificadores estão corretos
     if (($cpf[9] != $digito1) || ($cpf[10] != $digito2)) {
         return false;
     }
@@ -88,9 +88,7 @@ function validarCPF($cpf) {
 }
 ?>
 
-
 <?php require_once("cabecalho.php") ?>
-
 
 <main id="main" class="main"> 
     <section class="section">
