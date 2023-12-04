@@ -65,7 +65,7 @@ $sql = "SELECT cv.id, c.nome as cliente, v.nome as vendedor, cv.datacriacao, cv.
         LEFT JOIN cliente c ON cv.cliente_id = c.id
         LEFT JOIN vendedor v ON cv.vendedor_id = v.id
               $filtro
-        ORDER BY cv.datacriacao desc"; //v.total 
+        where cv.operacao = 'condicional' ORDER BY cv.datacriacao desc"; //v.total 
 
 //3. Executar a SQL
 $resultado = mysqli_query($conexao, $sql);
