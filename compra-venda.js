@@ -1,60 +1,60 @@
-$(function() {
-    
+$(function () {
+
     /////////////////////////////////////////////////////
     // EVENTOS DE FORMULÁRIO/////////////////////////////
     /////////////////////////////////////////////////////
-    
+
     function Adicionar() {
         if (!validaCamposFormularioProduto()) {
             return false
         }
-        
-        var produto_id        = $("#produto_id").val() //form.produto_id.value
+
+        var produto_id = $("#produto_id").val() //form.produto_id.value
         var produto_descricao = $("#produto_id option:selected").text()
-        var quantidade        = Number($("#quantidade").val())
-        var valorUnitario     = Number($("#valorUnitario").val().replace(',', '.'))
-        var valorTotalDoItem  = quantidade * valorUnitario
+        var quantidade = Number($("#quantidade").val())
+        var valorUnitario = Number($("#valorUnitario").val().replace(',', '.'))
+        var valorTotalDoItem = quantidade * valorUnitario
 
         //Troca de ponto pra vírgula para exibir os decimais no valor
-        var valorUnitarioStr  = formataValorStr(valorUnitario)
+        var valorUnitarioStr = formataValorStr(valorUnitario)
         var valorTotalItemStr = formataValorStr(valorTotalDoItem)
 
 
         //Adiciona linha na tabela dinâmica
-		$("#tabela").append(
-        "<tr>"+
-            "<input type=\"hidden\" name=\"produto_id[]\" value='"+ produto_id +"' />" + 
-            "<input type=\"hidden\" name=\"quantidade[]\" value='"+ quantidade +"' />" + 
-            "<input type=\"hidden\" name=\"valor[]\" value='"+ valorUnitario +"' />" +
+        $("#tabela").append(
+            "<tr>" +
+            "<input type=\"hidden\" name=\"produto_id[]\" value='" + produto_id + "' />" +
+            "<input type=\"hidden\" name=\"quantidade[]\" value='" + quantidade + "' />" +
+            "<input type=\"hidden\" name=\"valor[]\" value='" + valorUnitario + "' />" +
 
-            "<td>"+ produto_descricao +"</td>"+ //"+ $produto_id +"
-            "<td class=\"text-right\" id=\"quantidade\">"+ quantidade +"</td>"+ //"+ $quantidade +"
-            "<td class=\"text-right\" id=\"valorUnitario\">"+ valorUnitarioStr +"</td>"+ //"+ $valor +"
-            "<td class=\"text-right\" id=\"valorTotalItem\">"+ valorTotalItemStr +"</td>"+
-            "<td class=\"text-center\">"+
-                "<button type=\"button\" class=\"btn btn-danger btn-sm btnExcluir\">"+
-                    "<i class=\"bi bi-trash3-fill\"></i>"+
-                "</button>"+
-            "</td>"+ 
-        "</tr>");
-        
-		$(".btnExcluir").bind("click", Excluir);
+            "<td>" + produto_descricao + "</td>" + //"+ $produto_id +"
+            "<td class=\"text-right\" id=\"quantidade\">" + quantidade + "</td>" + //"+ $quantidade +"
+            "<td class=\"text-right\" id=\"valorUnitario\">" + valorUnitarioStr + "</td>" + //"+ $valor +"
+            "<td class=\"text-right\" id=\"valorTotalItem\">" + valorTotalItemStr + "</td>" +
+            "<td class=\"text-center\">" +
+            "<button type=\"button\" class=\"btn btn-danger btn-sm btnExcluir\">" +
+            "<i class=\"bi bi-trash3-fill\"></i>" +
+            "</button>" +
+            "</td>" +
+            "</tr>");
+
+        $(".btnExcluir").bind("click", Excluir);
 
         limpaCampos()
         recalculaValores()
-	};
+    };
 
     function Excluir() {
         var par = $(this).parent().parent(); //tr
-	    par.remove();
+        par.remove();
 
         recalculaValores()
-	};
+    };
 
     function AplicarDesconto() {
         recalculaValores()
     }
-	
+
     /////////////////////////////////////////////////////
     // FUNÇÕES AUXILIARES ///////////////////////////////
     /////////////////////////////////////////////////////
@@ -83,7 +83,7 @@ $(function() {
         form.quantidade.value = '1'
         form.valorUnitario.value = ''
     }
-    
+
     function recalculaValores() {
         var conteudo = document.getElementById("tabela").rows //Pega todas as 'tr' da tabela
 
@@ -95,7 +95,7 @@ $(function() {
 
         //document.getElementById("resumoSoma").textContent = formataValorStr(somaProdutos)
         $("#resumoSoma").text(formataValorStr(somaProdutos)) //Substitui a linha acima, porém agora usando jQuery
-        var desconto   = Number(form.desconto.value.replace(',', '.'))
+        var desconto = Number(form.desconto.value.replace(',', '.'))
         var valorTotal = somaProdutos - desconto
         $("#resumoValorTotal").text(formataValorStr(valorTotal))
     }
@@ -106,6 +106,10 @@ $(function() {
 
 
     $(".btnExcluir").bind("click", Excluir);
-	$("#btnAdicionar").bind("click", Adicionar);
-	$("#btnAplicarDesconto").bind("click", AplicarDesconto); 
+    $("#btnAdicionar").bind("click", Adicionar);
+    $("#btnAplicarDesconto").bind("click", AplicarDesconto);
 });
+
+// Antes da função Adicionar(), adicione este bloco de código
+
+

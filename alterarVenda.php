@@ -5,25 +5,29 @@
 session_start();
 if (empty($_SESSION)) {
     print "<script>location.href='index.php';</script>";
-} 
+}
 ?>
 
 <?php
 
 require_once("conexao.php");
 
+if(isset($_GET['id'])) {
+    $idVenda = $_GET['id'];
+} else {
+    $idVenda = $_POST['id'];
+}
+
 if (isset($_POST['finalizar'])) {
 
     $id = $_POST['id']; // Adicione essa linha para obter o ID da venda
-
     $cliente_id = $_POST['cliente_id'];
-    echo $cliente_id;
     $vendedor_id = $_POST['vendedor_id'];
     $operacao = $_POST['operacao'];
     $formaPagamento = $_POST['formaPagamento'];
     $situacao = $_POST['situacao'];
     $desconto = str_replace(',', '.', $_POST['desconto']);
-    
+
     $sql2 = "update compravenda
     set cliente_id= '$cliente_id', 
     vendedor_id = '$vendedor_id',
@@ -31,7 +35,7 @@ if (isset($_POST['finalizar'])) {
     operacao = '$operacao',
     formaPagamento = '$formaPagamento',
     situacao = '$situacao'
-    where id = '$id'";
+    where id = $id";
 
     //compravendaproduto
     $produto_id = $_POST['produto_id'];
@@ -39,22 +43,31 @@ if (isset($_POST['finalizar'])) {
     $valor = $_POST['valor'];
 
     for ($i = 0; $i < count($produto_id); $i++) {
-        $sql2 = "update compravendaproduto
-                set compravenda_id = '$id',
-                produto_id = '$produto_id[$i]',
-                quantidade = '$quantidade[$i]',
-                valorunitario = '$valor[$i]'
-                where id = $id";
-        mysqli_query($conexao, $sql2);
+        $produtoId = $produto_id[$i];
+        $quantidadeProduto = $quantidade[$i];
+        $valorProduto = $valor[$i];
+
+        $sqlUpdateProduto = "UPDATE compravendaproduto
+                            SET quantidade = '$quantidadeProduto',
+                            valorunitario = '$valorProduto'
+                            WHERE compravenda_id = '$id' AND produto_id = '$produtoId'";
+
+        mysqli_query($conexao, $sqlUpdateProduto);
+
+        if (isset($_POST['excluido'][$i]) && $_POST['excluido'][$i] == 1) {
+            $sqlExcluirProduto = "DELETE FROM compravendaproduto 
+                                  WHERE compravenda_id = '$id' AND produto_id = '$produtoId'";
+            mysqli_query($conexao, $sqlExcluirProduto);
+        }
     }
 
-      //5. Mostrar uma mensagem ao usuário
+
+    //5. Mostrar uma mensagem ao usuário
     $mensagem = "Alterado com sucesso.";
 
 }
 
 // Busca a venda selecionada
-$idVenda = $_GET['id'];
 $sqlVenda = "SELECT * FROM compravenda WHERE id = $idVenda";
 $resultadoVenda = mysqli_query($conexao, $sqlVenda);
 $linhaVenda = mysqli_fetch_array($resultadoVenda);
@@ -65,12 +78,52 @@ $resultadoProdutos = mysqli_query($conexao, $sqlProdutos);
 $total = 0;
 $sqlProduto = "select quantidade, valorunitario from compravendaproduto where compravenda_id = " . $linhaVenda['id'];
 $resultadoVendaProduto = mysqli_query($conexao, $sqlProduto);
+
 if (mysqli_num_rows($resultadoVendaProduto) > 0) {
 
     while ($linhaVendaProduto = mysqli_fetch_array($resultadoVendaProduto)) {
         $total += ($linhaVendaProduto['quantidade'] * $linhaVendaProduto['valorunitario']);
     }
 }
+
+// Antes do cabeçalho HTML, adicione este bloco de código
+$sqlProduto = "SELECT cvp.quantidade, cvp.valorUnitario, p.nome 
+               FROM compravendaproduto cvp 
+               JOIN produto p ON cvp.produto_id = p.id 
+               WHERE cvp.compravenda_id = " . $linhaVenda['id'];
+
+$resultadoVendaProduto = mysqli_query($conexao, $sqlProduto);
+
+if (mysqli_num_rows($resultadoVendaProduto) > 0) {
+    while ($linhaVendaProduto = mysqli_fetch_array($resultadoVendaProduto)) {
+        $produto = array(
+            'nome' => $linhaVendaProduto['nome'],
+            'quantidade' => $linhaVendaProduto['quantidade'],
+            'valorunitario' => $linhaVendaProduto['valorUnitario'],
+            // Adicione outros campos necessários
+        );
+        $productos[] = $produto;
+    }
+}
+
+// Busca os produtos da venda
+$sqlProdutos = "SELECT * FROM compravendaproduto WHERE compravenda_id = $idVenda";
+$resultadoProdutos = mysqli_query($conexao, $sqlProdutos);
+
+// Initialize $produto_id
+$produto_id = isset($_POST['produto_id']) ? $_POST['produto_id'] : [];
+
+// Restante do código...
+
+// Loop para exibir os produtos
+for ($i = 0; $i < count($produto_id); $i++) {
+    $produtoId = $produto_id[$i];
+    // Restante do código...
+}
+
+
+$produtos_json = json_encode($productos);
+
 require_once("cabecalho.php");
 
 ?>
@@ -167,7 +220,7 @@ require_once("cabecalho.php");
                                             while ($linha = mysqli_fetch_array($resultado)):
                                                 $cliente_id = $linha['id'];
                                                 $nome = $linha['nome'];
-                                        
+
                                                 // Verifica se o cliente atual é o que deve ser pré-selecionado
                                                 $selected = ($cliente_id == $linhaVenda['cliente_id']) ? 'selected' : '';
                                                 settype($cliente_id, "integer");
@@ -186,7 +239,7 @@ require_once("cabecalho.php");
                                             <option value="Crédito">Cartão de crédito</option>
                                             <option value="Débito">Cartão de Débito</option>
                                         </select>
-                                    </div> 
+                                    </div>
 
                                     <div class="col-md-9">
                                         <label for="vendedor_id" class="form-label">Vendedor</label>
@@ -212,52 +265,7 @@ require_once("cabecalho.php");
                                     </div>
                                 </div>
                                 <hr>
-
-                                <h4 class="mb-3">Produtos</h4>
-
-                                <div class="card card-body">
-                                    <div class="row">
-                                        <div class="col-md-12">
-                                            <label for="produto_id">Produto</label>
-                                            <select name="produto_id" id="produto_id" class="form-select"
-                                                value="<?= $linha['produto_id'] ?>" aria-label="Default select example">
-                                                <option value="">-- Selecione --</option>
-                                                <?php
-                                                $sql = "select * from produto order by nome";
-                                                $resultado = mysqli_query($conexao, $sql);
-
-                                                while ($linha = mysqli_fetch_array($resultado)) {
-                                                    $id = $linha['id'];
-                                                    $nome = $linha['nome'];
-
-                                                    echo "<option value='{$id}'>{$nome}</option>";
-                                                }
-                                                ?>
-                                            </select>
-                                        </div>
-                                    </div>
-
-                                    <div class="row mt-3">
-                                        <div class="col-md-3">
-                                            <div class="form-group">
-                                                <label for="qtd">Qtd.</label>
-                                                <input type="number" id="quantidade" name="quantidade"
-                                                    class="form-control" value='1'>
-                                            </div>
-                                        </div>
-                                        <div class="col-md-4">
-                                            <div class="form-group">
-                                                <label for="valorUnitario">Valor Un.</label>
-                                                <div class="input-group mb-2 text-right">
-                                                    <div class="input-group-prepend">
-                                                        <div class="input-group-text">R$</div>
-                                                    </div>
-                                                    <input type="text" id="valorUnitario" name="valorUnitario"
-                                                        placeholder='0,00' class="form-control text-right">
-                                                </div>
-                                            </div>
-                                        </div>
-
+                                <!-- 
                                         <script>
                                             $(document).ready(function () {
                                                 // Função para lidar com a mudança no campo de seleção de produtos
@@ -281,19 +289,7 @@ require_once("cabecalho.php");
                                                 });
                                             });
                                         </script>
-
-
-                                        <div class="col-md-2">
-                                            <div class="form-group">
-                                                <label style="color: white">aaaaa</label>
-                                                <button type="button" class="btn btn-secondary" class="col-md-15"
-                                                    id="btnAdicionar">Adicionar</button>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <hr>
+                                            -->
                                 <h4 class="mb-3">Lista de Produtos</h4>
 
                                 <div class="row">
@@ -310,6 +306,82 @@ require_once("cabecalho.php");
                                             </thead>
                                             <tbody>
                                                 <?php
+                                                for ($i = 0; $i < count($produto_id); $i++) {
+                                                    $produtoId = $produto_id[$i];
+                                                    $quantidadeProduto = $quantidade[$i];
+                                                    $valorProduto = $valor[$i];
+
+                                                    // Adicione o campo excluido[] para cada produto
+                                                    echo '<input type="hidden" name="excluido[' . $produtoId . ']" value="0">';
+
+                                                    // Restante do seu código para exibir os campos do produto...
+                                                    echo '<td><input type="text" class="form-control" name="quantidade[]" value="' . $quantidadeProduto . '"></td>';
+                                                    echo '<td><input type="text" class="form-control" name="valor[]" value="' . $valorProduto . '"></td>';
+                                                    // Adicione outros campos necessários
+                                                
+                                                    // Restante do seu código...
+                                                }
+                                                ?>
+
+                                                <script>
+                                                    // Antes da função Adicionar(), adicione este bloco de código
+                                                    $(document).on("click", ".btnExcluir", Excluir);
+
+                                                    // ... Seu código existente ...
+                                                    function Excluir() {
+                                                        var par = $(this).closest("tr"); // Encontra a linha mais próxima (tr)
+                                                        var produtoId = par.find('select[name^="produto_id"]').val();
+
+                                                        // Marca o produto como excluído
+                                                        par.find('input[name^="excluido"]').val(1);
+
+                                                        par.remove();
+                                                        recalculaValores();
+                                                    }
+
+                                                    // Função para formatar o valor como string
+                                                    function formataValorStr(valor) {
+                                                        return valor.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+                                                    }
+
+                                                    // Função para preencher a tabela de produtos
+                                                    function preencherTabelaProdutos(produtos) {
+                                                        // Limpa a tabela antes de adicionar as novas linhas
+                                                        $("#tabela tbody").empty();
+
+                                                        for (let i = 0; i < produtos.length; i++) {
+                                                            $(document).on("click", ".btnExcluir", Excluir);
+                                                            const produto = produtos[i];
+                                                            // Adicione a lógica para adicionar a linha na tabela com os dados do produto
+                                                            $("#tabela").append(
+                                                                "<tr>" +
+                                                                // Adicione os campos do produto aqui
+                                                                "<td>" +
+                                                                "<select class=\"form-select\" name=\"produto_id[]\">" +
+                                                                "<option value=\"" + produto.produto_id + "\">" + produto.nome + "</option>" +
+                                                                "</select>" +
+                                                                "</td>" +
+                                                                "<td><input type=\"text\" class=\"form-control\" name=\"quantidade[]\" value=\"" + produto.quantidade + "\"></td>" +
+                                                                "<td><input type=\"text\" class=\"form-control\" name=\"valor[]\" value=\"" + produto.valorunitario + "\"></td>" +
+                                                                // Adicione outros campos necessários
+                                                                "<td class=\"text-right\">" + formataValorStr(produto.valorunitario * produto.quantidade) + "</td>" +
+                                                                "<td class=\"text-center\">" +
+                                                                "<button type=\"button\" class=\"btn btn-danger btn-sm btnExcluir\">" +
+                                                                "<i class=\"bi bi-trash3-fill\"></i>" +
+                                                                "</button>" +
+                                                                "</td>" +
+                                                                "</tr>"
+                                                            );
+                                                        }
+
+                                                        // Restante do seu código...
+
+                                                    }
+
+                                                    // Restante do seu código...
+                                                </script>
+                                                <!--
+                                                <
                                                 if (isset($linhaVenda['id'])) {
                                                     $sqlProduto = "select produto.nome as nome, quantidade, valorunitario from compravendaproduto 
                                                     inner join produto on compravendaproduto.produto_id = produto.id where compravenda_id = " . $linhaVenda['id'];
@@ -330,6 +402,7 @@ require_once("cabecalho.php");
                                                 }
 
                                                 ?>
+                                            -->
                                             </tbody>
                                         </table>
 
@@ -354,5 +427,11 @@ require_once("cabecalho.php");
         $('#cliente').select2();
     });
 </script>
-
+<script>
+    $(document).ready(function () {
+        console.log(<?php echo $produtos_json; ?>); // Verifica se os produtos estão corretos
+        preencherTabelaProdutos(<?php echo $produtos_json; ?>);
+        // Restante do seu código...
+    });
+</script>
 <?php require_once("rodape.php") ?>
