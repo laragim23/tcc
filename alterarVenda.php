@@ -223,7 +223,7 @@ require_once("cabecalho.php");
                                     </div>
                                 </div>
                                 <hr>
-                                <h4 class="mb-3">Lista de Produtos</h4>
+                                
 
                                 <div class="row">
                                     <div class="col-md-12">
