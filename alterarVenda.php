@@ -183,7 +183,7 @@ require_once("cabecalho.php");
 
                                     <div class="col-md-3">
                                         <label for="operacao" class="form-label">Operação</label>
-                                        <select id="operacao" name="operacao" required
+                                        <select class="form-select" id="operacao" name="operacao" required
                                             class="custom-select d-block w-100">
                                             <option value="Venda" <?= ($linhaVenda['operacao'] == 'Venda') ? 'selected' : '' ?>>Venda</option>
                                             <option value="Condicional" <?= ($linhaVenda['operacao'] == 'Condicional') ? 'selected' : '' ?>>Condicional</option>
